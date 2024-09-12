@@ -6,7 +6,7 @@ local repo = 'https://raw.githubusercontent.com/MrIcMe/linoria/main/'
 local Library = loadstring(game:HttpGet(repo .. 'Library.lua'))()
 local ThemeManager = loadstring(game:HttpGet(repo .. 'addons/ThemeManager.lua'))()
 local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
-ver = "0.1.3"
+ver = game:HttpGet() or "0.1.3"
 
 local Window = Library:CreateWindow({
     Title = 'TBWare v' .. ver,
@@ -269,9 +269,9 @@ local WatermarkConnection = game:GetService('RunService').RenderStepped:Connect(
         FrameTimer = tick()
     end
     Library:SetWatermark('TBWare | FPS: ' .. FPS)
-    TBX_FPS = true
+    getgenv().TBX_FPS = true
 end)
-TBX_Loaded = true
+getgenv().TBX_Loaded = true
 local MenuGroup = Tabs['TBWare Settings']:AddLeftGroupbox('Menu')
 
 MenuGroup:AddButton('Unload', function() Library:Unload() end)
