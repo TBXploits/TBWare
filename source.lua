@@ -285,7 +285,7 @@ LeftGroupBox:AddToggle(
     Tooltip = "Fire Prompt Instantly After Hold",
     Callback = function(b)
         if b then
-            met2 = game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
+            met2 = ProximityPromptService.PromptButtonHoldBegan:Connect(function(prompt)
                 fireproximityprompt(prompt)
             end)
         else
