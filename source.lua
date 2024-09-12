@@ -261,7 +261,7 @@ LeftGroupBox:AddToggle(
     'IIT1',
     Text = "Instant Interact Method 1",
     Default = false,
-    Tooltip = "Set Duration 0",
+    Tooltip = "Set Prompt Duration 0",
     Callback = function(b)
         if b then
             local met1 = ProximityPromptService.PromptShown:Connect(function(prompt)
@@ -278,7 +278,7 @@ LeftGroupBox:AddToggle(
     'IIT2',
     Text = "Instant Interact Method 2",
     Default = false,
-    Tooltip = "Set Duration 0",
+    Tooltip = "Fire Prompt Instantly After Hold",
     Callback = function(b)
         if b then
             local met2 = game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
