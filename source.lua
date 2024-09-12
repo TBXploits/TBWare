@@ -256,6 +256,20 @@ RightGroupBox:AddButton('Anti-Slip', function()
     end
 end)
 
+RightGroupBox:AddDivider()
+RightGroupBox:AddDropdown('Player', {
+    SpecialType = 'Player',
+    Text = 'Target Player',
+    Tooltip = 'Select Target Player!',
+    Callback = function(Value)
+        getgenv().Selected = Value
+    end
+})
+
+RightGroupBox:AddButton('Teleport To Target', function()
+    game.Players.LocalPlayer.Character:PivotTo(game.Players[Selected].Character.HumanoidRootPart.CFrame)
+end)
+
 local FrameTimer = tick()
 local FrameCounter = 0
 local FPS = 60
