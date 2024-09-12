@@ -303,7 +303,7 @@ LeftGroupBox:AddToggle(
     {
         Text = "Click Teleport",
         Default = false,
-        Tooltip = "Click TP!"
+        Tooltip = "Click TP!",
         Callback = function(state)
             
             if state then
@@ -487,16 +487,19 @@ local MenuGroup = Tabs["TBWare Settings"]:AddLeftGroupbox("Menu")
 MenuGroup:AddButton(
     "Unload",
     function()
-        Library:Unload()
-        getgenv().TBX_Loaded = nil
-        getgenv().TBX_FPS = nil
-        getgenv().FSPD = false
-        getgenv().FJMP = false
-        getgenv().FBTH = false
-        getgenv().Viewing = false
-        getgenv().running_view = false
-        met1:Disconnect()
-        met2:Disconnect()
+        pcall(function()
+            Library:Unload()
+            getgenv().TBX_Loaded = nil
+            getgenv().TBX_FPS = nil
+            getgenv().FSPD = false
+            getgenv().FJMP = false
+            getgenv().FBTH = false
+            getgenv().Viewing = false
+            getgenv().running_view = false
+            met1:Disconnect()
+            met2:Disconnect()
+            clicktp:Disconnect()
+        end)
         local character = player.Character
         if character then
             local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
