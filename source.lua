@@ -31,8 +31,8 @@ getgenv().ison = false
 getgenv().FSPD = false
 getgenv().FJMP = false
 getgenv().FBTH = false
-getgenv().met1
-getgenv().met2
+getgenv().met1 = nil
+getgenv().met2 = nil
 
 function stringToRGB(str)
     local r, g, b = str:match("(%d+),%s*(%d+),%s*(%d+)")
