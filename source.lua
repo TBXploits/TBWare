@@ -279,16 +279,19 @@ end)
 
 RightGroupBox:AddToggle('View', {
     Text = 'View Target',
-    Default = true,
-    Tooltip = 'This is a tooltip',
+    Default = false,
+    Tooltip = 'View Target Player',
     Callback = function(YesNo)
+        getgenv().Viewing = YesNo
+        getgenv().running_view = YesNo
         local Players = game:GetService("Players")
         local Workspace = game:GetService("Workspace")
 
         local player = Players.LocalPlayer
-        local Value = YesNo
 
-        if Value then
+        if Viewing then
+            pcall(function()
+            while running_view do wait()
             local targetName = Selected
             local target = Workspace:FindFirstChild(targetName)
             
@@ -303,6 +306,8 @@ RightGroupBox:AddToggle('View', {
                     end
                 end
             end
+            end
+            end)
         else
             local character = player.Character
             if character then
@@ -343,6 +348,7 @@ MenuGroup:AddButton('Unload', function()
     getgenv().FSPD = false
     getgenv().FJMP = false
     getgenv().FBTH = false
+    getgenv().Viewing = false
     espConnection:Disconnect()
     espConnection = nil
     for _, player in pairs(game.Players:GetPlayers()) do
