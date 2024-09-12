@@ -1,7 +1,12 @@
+if TBX_Loaded and TBX_FPS then
+    return
+    -- error("Loaded Already!")
+end
 local repo = 'https://raw.githubusercontent.com/MrIcMe/linoria/main/'
 local Library = loadstring(game:HttpGet(repo .. 'Library.lua'))()
 local ThemeManager = loadstring(game:HttpGet(repo .. 'addons/ThemeManager.lua'))()
 local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
+local TBX_Loaded, TBX_FPS = nil, nil
 
 local Window = Library:CreateWindow({
     Title = 'TBWare',
@@ -263,10 +268,10 @@ local WatermarkConnection = game:GetService('RunService').RenderStepped:Connect(
         FrameCounter = 0
         FrameTimer = tick()
     end
-
     Library:SetWatermark('TBWare | FPS: ' .. FPS)
+    TBX_FPS = true
 end)
-
+TBX_Loaded = true
 local MenuGroup = Tabs['TBWare Settings']:AddLeftGroupbox('Menu')
 
 MenuGroup:AddButton('Unload', function() Library:Unload() end)
