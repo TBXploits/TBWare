@@ -31,6 +31,8 @@ getgenv().ison = false
 getgenv().FSPD = false
 getgenv().FJMP = false
 getgenv().FBTH = false
+getgenv().met1
+getgenv().met2
 
 function stringToRGB(str)
     local r, g, b = str:match("(%d+),%s*(%d+),%s*(%d+)")
@@ -265,7 +267,7 @@ LeftGroupBox:AddToggle(
     Tooltip = "Set Prompt Duration 0",
     Callback = function(b)
         if b then
-            local met1 = ProximityPromptService.PromptShown:Connect(function(prompt)
+            met1 = ProximityPromptService.PromptShown:Connect(function(prompt)
                 prompt.HoldDuration = 0
             end)
         else
@@ -283,7 +285,7 @@ LeftGroupBox:AddToggle(
     Tooltip = "Fire Prompt Instantly After Hold",
     Callback = function(b)
         if b then
-            local met2 = game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
+            met2 = game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
                 fireproximityprompt(prompt)
             end)
         else
