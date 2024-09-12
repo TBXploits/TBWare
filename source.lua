@@ -259,6 +259,7 @@ local ProximityPromptService = game:GetService("ProximityPromptService")
 
 LeftGroupBox:AddToggle(
     'IIT1',
+    {
     Text = "Instant Interact Method 1",
     Default = false,
     Tooltip = "Set Prompt Duration 0",
@@ -276,6 +277,7 @@ LeftGroupBox:AddToggle(
 
 LeftGroupBox:AddToggle(
     'IIT2',
+    {
     Text = "Instant Interact Method 2",
     Default = false,
     Tooltip = "Fire Prompt Instantly After Hold",
