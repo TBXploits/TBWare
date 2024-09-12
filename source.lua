@@ -7,6 +7,7 @@ local Library = loadstring(game:HttpGet(repo .. 'Library.lua'))()
 local ThemeManager = loadstring(game:HttpGet(repo .. 'addons/ThemeManager.lua'))()
 local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
 ver = game:HttpGet("https://raw.githubusercontent.com/TBXploits/TBWare/main/version.lua")
+local player = game.Players.LocalPlayer
 
 local Window = Library:CreateWindow({
     Title = 'TBWare v' .. ver,
