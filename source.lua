@@ -349,6 +349,7 @@ MenuGroup:AddButton('Unload', function()
     getgenv().FJMP = false
     getgenv().FBTH = false
     getgenv().Viewing = false
+    getgenv().running_view = false
     espConnection:Disconnect()
     espConnection = nil
     for _, player in pairs(game.Players:GetPlayers()) do
