@@ -496,9 +496,9 @@ MenuGroup:AddButton(
             getgenv().FBTH = false
             getgenv().Viewing = false
             getgenv().running_view = false
-            met1:Disconnect()
-            met2:Disconnect()
-            clicktp:Disconnect()
+            if met1 ~= nil then met1:Disconnect() end
+            if met2 ~= nil then met2:Disconnect() end
+            if clicktp ~= nil then clicktp:Disconnect() end
         end)
         local character = player.Character
         if character then
