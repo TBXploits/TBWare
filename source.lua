@@ -6,7 +6,7 @@ local repo = 'https://raw.githubusercontent.com/MrIcMe/linoria/main/'
 local Library = loadstring(game:HttpGet(repo .. 'Library.lua'))()
 local ThemeManager = loadstring(game:HttpGet(repo .. 'addons/ThemeManager.lua'))()
 local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
-ver = game:HttpGet() or "0.1.3"
+ver = game:HttpGet("https://raw.githubusercontent.com/TBXploits/TBWare/main/version.lua")
 
 local Window = Library:CreateWindow({
     Title = 'TBWare v' .. ver,
