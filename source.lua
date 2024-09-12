@@ -128,6 +128,8 @@ LeftGroupBox:AddToggle('ESP', {
     end
 })
 
+LeftGroupBox:AddDivider()
+
 RightGroupBox:AddToggle('ForceSetSpeed', {
     Text = 'Force Set Speed',
     Default = false,
@@ -257,6 +259,7 @@ RightGroupBox:AddButton('Anti-Slip', function()
 end)
 
 RightGroupBox:AddDivider()
+
 RightGroupBox:AddDropdown('Player', {
     SpecialType = 'Player',
     Text = 'Target Player',
@@ -269,6 +272,51 @@ RightGroupBox:AddDropdown('Player', {
 RightGroupBox:AddButton('Teleport To Target', function()
     game.Players.LocalPlayer.Character:PivotTo(game.Players[Selected].Character.HumanoidRootPart.CFrame)
 end)
+
+RightGroupBox:AddButton('Client Bring Target', function()
+    game.Players[Selected].Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+end)
+
+RightGroupBox:AddToggle('View', {
+    Text = 'View Target',
+    Default = true,
+    Tooltip = 'This is a tooltip',
+    Callback = function(YesNo)
+        local Players = game:GetService("Players")
+        local Workspace = game:GetService("Workspace")
+
+        local player = Players.LocalPlayer
+        local Value = YesNo
+
+        if Value then
+            local targetName = Selected
+            local target = Workspace:FindFirstChild(targetName)
+            
+            if target then
+                local character = player.Character
+                if character then
+                    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                    if humanoidRootPart then
+                        local camera = Workspace.CurrentCamera
+                        camera.CameraSubject = target
+                        camera.CFrame = CFrame.new(target.Position + Vector3.new(0, 5, 10), target.Position)
+                    end
+                end
+            end
+        else
+            local character = player.Character
+            if character then
+                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                if humanoidRootPart then
+                    local camera = Workspace.CurrentCamera
+                    camera.CameraSubject = character:FindFirstChildOfClass("Humanoid")
+                    camera.CFrame = CFrame.new(humanoidRootPart.Position + Vector3.new(0, 5, 10), humanoidRootPart.Position)
+                end
+            end
+        end
+
+    end
+})
 
 local FrameTimer = tick()
 local FrameCounter = 0
