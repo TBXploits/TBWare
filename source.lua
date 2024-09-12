@@ -253,6 +253,44 @@ LeftGroupBox:AddButton(
     end
 )
 
+LeftGroupBox:AddDivider()
+
+local ProximityPromptService = game:GetService("ProximityPromptService")
+
+LeftGroupBox:AddToggle(
+    'IIT1',
+    Text = "Instant Interact Method 1",
+    Default = false,
+    Tooltip = "Set Duration 0",
+    Callback = function(b)
+        if b then
+            local met1 = ProximityPromptService.PromptShown:Connect(function(prompt)
+                prompt.HoldDuration = 0
+            end)
+        else
+        met1:Disconnect()
+        end
+    end
+    }
+)
+
+LeftGroupBox:AddToggle(
+    'IIT2',
+    Text = "Instant Interact Method 1",
+    Default = false,
+    Tooltip = "Set Duration 0",
+    Callback = function(b)
+        if b then
+            local met2 = game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
+                fireproximityprompt(prompt)
+            end)
+        else
+        met2:Disconnect()
+        end
+    end
+    }
+)
+
 task.spawn(
     function()
         while true do
@@ -430,6 +468,8 @@ MenuGroup:AddButton(
         getgenv().FBTH = false
         getgenv().Viewing = false
         getgenv().running_view = false
+        met1:Disconnect()
+        met2:Disconnect()
         local character = player.Character
         if character then
             local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
