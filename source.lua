@@ -350,6 +350,15 @@ MenuGroup:AddButton('Unload', function()
     getgenv().FBTH = false
     getgenv().Viewing = false
     getgenv().running_view = false
+    local character = player.Character
+        if character then
+            local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+            if humanoidRootPart then
+                local camera = Workspace.CurrentCamera
+                camera.CameraSubject = character:FindFirstChildOfClass("Humanoid")
+                camera.CFrame = CFrame.new(humanoidRootPart.Position + Vector3.new(0, 5, 10), humanoidRootPart.Position)
+            end
+        end
     espConnection:Disconnect()
     espConnection = nil
     for _, player in pairs(game.Players:GetPlayers()) do
