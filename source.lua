@@ -8,6 +8,8 @@ local ThemeManager = loadstring(game:HttpGet(repo .. "addons/ThemeManager.lua"))
 local SaveManager = loadstring(game:HttpGet(repo .. "addons/SaveManager.lua"))()
 ver = game:HttpGet("https://raw.githubusercontent.com/TBXploits/TBWare/main/version.lua")
 local player = game.Players.LocalPlayer
+local mouse = player:GetMouse()
+
 local Window =
     Library:CreateWindow(
     {
@@ -33,6 +35,7 @@ getgenv().FJMP = false
 getgenv().FBTH = false
 getgenv().met1 = nil
 getgenv().met2 = nil
+getgenv().clicktp = nil
 
 function stringToRGB(str)
     local r, g, b = str:match("(%d+),%s*(%d+),%s*(%d+)")
@@ -292,6 +295,26 @@ LeftGroupBox:AddToggle(
         met2:Disconnect()
         end
     end
+    }
+)
+
+LeftGroupBox:AddToggle(
+    "ClickTP",
+    {
+        Text = "Click Teleport",
+        Default = false,
+        Tooltip = "Click TP!"
+        Callback = function(state)
+            
+            if state then
+                clicktp = mouse.Button1Down:Connect(function()
+                    local hitPosition = mouse.Hit.p
+                    player.Character:PivotTo(CFrame.new(hitPosition))
+                end)
+            else
+                clicktp:Disconnect()
+            end
+        end
     }
 )
 
