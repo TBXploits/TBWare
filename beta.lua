@@ -119,29 +119,34 @@ function cesp(t, hd, txt)
     end
 end
 
-local function setupHealthTracking(player)
-    local function updateHealthLabel()
-        local character = player.Character
-        if character and character:FindFirstChild("Head") then
-            local humanoid = character:FindFirstChildOfClass("Humanoid")
-            if humanoid then
-                local healthText = string.format("%s | Health: %.2f", player.Name, humanoid.Health)
-                cesp(character, character.Head, healthText)
-            end
+local function updateHealthLabel(player)
+    local character = player.Character
+    if character and character:FindFirstChild("Head") then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            local healthText = string.format("%s | Health: %.2f", player.Name, humanoid.Health)
+            cesp(character, character.Head, healthText)
         end
     end
+end
+
+local function setupHealthTracking(player)
+    local connections = getgenv().playerConnections[player] or {}
 
     local function onCharacterAdded(character)
         local humanoid = character:WaitForChild("Humanoid")
-        updateHealthLabel()
-        humanoid.HealthChanged:Connect(updateHealthLabel)
+        updateHealthLabel(player)
+        table.insert(connections, humanoid.HealthChanged:Connect(function()
+            updateHealthLabel(player)
+        end))
     end
 
     if player.Character then
         onCharacterAdded(player.Character)
     end
 
-    player.CharacterAdded:Connect(onCharacterAdded)
+    table.insert(connections, player.CharacterAdded:Connect(onCharacterAdded))
+    getgenv().playerConnections[player] = connections
 end
 
 local function disconnectHealthTracking(player)
@@ -171,7 +176,11 @@ LeftGroupBox:AddToggle(
             if state then
                 getgenv().espActive = true
                 Library:Notify("ESP is now enabled", 3)
-                getgenv().espConnection = rs.RenderStepped:Connect(updateESP)
+                getgenv().espConnection = rs.RenderStepped:Connect(function()
+                    if getgenv().espActive then
+                        updateESP()
+                    end
+                end)
             else
                 getgenv().espActive = false
                 Library:Notify("ESP is now disabled", 3)
