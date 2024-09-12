@@ -276,7 +276,7 @@ LeftGroupBox:AddToggle(
 
 LeftGroupBox:AddToggle(
     'IIT2',
-    Text = "Instant Interact Method 1",
+    Text = "Instant Interact Method 2",
     Default = false,
     Tooltip = "Set Duration 0",
     Callback = function(b)
