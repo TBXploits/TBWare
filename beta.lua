@@ -40,6 +40,8 @@ getgenv().espActive = false
 getgenv().espConnection = nil
 getgenv().playerConnections = {}
 
+local rs = game:GetService("RunService")
+
 function stringToRGB(str)
     local r, g, b = str:match("(%d+),%s*(%d+),%s*(%d+)")
     return tonumber(r), tonumber(g), tonumber(b)
