@@ -274,7 +274,29 @@ end)
 getgenv().TBX_Loaded = true
 local MenuGroup = Tabs['TBWare Settings']:AddLeftGroupbox('Menu')
 
-MenuGroup:AddButton('Unload', function() Library:Unload() end)
+MenuGroup:AddButton('Unload', function()
+    Library:Unload()
+    getgenv().TBX_Loaded = nil
+    getgenv().TBX_FPS = nil
+    getgenv().FSPD = false
+    getgenv().FJMP = false
+    getgenv().FBTH = false
+    espConnection:Disconnect()
+    espConnection = nil
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player ~= game.Players.LocalPlayer and player.Character then
+            local highlight = player.Character:FindFirstChild("TBXP")
+            local billboard =
+            player.Character:FindFirstChild("Head") and player.Character.Head:FindFirstChild("BillboardGui")
+            if highlight then
+                highlight:Destroy()
+            end
+            if billboard then
+                billboard:Destroy()
+            end
+        end
+    end
+end)
 MenuGroup:AddInput('MenuKeybind', {
     Text = 'Menu Keybind',
     Default = 'End',
