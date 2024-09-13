@@ -111,7 +111,7 @@ end
 local rs = game:GetService("RunService")
 local espConnection
 
-local function updateESP(player)
+local function setupESP(player)
     if player.Character and player.Character:FindFirstChild("Head") then
         local head = player.Character.Head
         local health = player.Character:FindFirstChild("Humanoid")
@@ -122,8 +122,7 @@ local function updateESP(player)
             end
 
             updateHealthText()
-
-            health.Changed:Connect(updateHealthText)
+            health.HealthChanged:Connect(updateHealthText)
         end
     end
 end
@@ -136,13 +135,13 @@ LeftGroupBox:AddToggle(
         Callback = function(state)
             if state then
                 Library:Notify("ESP is now enabled", 3)
-                espConnection = rs.RenderStepped:Connect(
+                espConnection = game:GetService("RunService").RenderStepped:Connect(
                     function()
                         for _, player in pairs(game.Players:GetPlayers()) do
-                            if player ~= game.Players.LocalPlayer then
-                                spawn(function()
-                                    updateESP(player)
-                                end)
+                            if player ~= game.Players.LocalPlayer and player.Character then
+                                if not player.Character:FindFirstChild("Head"):FindFirstChild("BillboardGui") then
+                                    setupESP(player)
+                                end
                             end
                         end
                     end
