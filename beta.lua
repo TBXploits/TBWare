@@ -36,11 +36,6 @@ getgenv().FBTH = false
 getgenv().met1 = nil
 getgenv().met2 = nil
 getgenv().clicktp = nil
-getgenv().espActive = false
-getgenv().espConnection = nil
-getgenv().playerConnections = {}
-
-local rs = game:GetService("RunService")
 
 function stringToRGB(str)
     local r, g, b = str:match("(%d+),%s*(%d+),%s*(%d+)")
@@ -77,30 +72,24 @@ LeftGroupBox:AddInput(
 
 function cesp(t, hd, txt)
     local part = hd
-    local billboardGui = part:FindFirstChild("BillboardGui")
-    local textLabel
 
-    if not billboardGui then
-        billboardGui = Instance.new("BillboardGui")
+    if not part:FindFirstChild("BillboardGui") then
+        local billboardGui = Instance.new("BillboardGui")
         billboardGui.Parent = part
         billboardGui.Adornee = part
         billboardGui.Size = UDim2.new(0, 150, 0, 50)
         billboardGui.StudsOffset = Vector3.new(0, 2, 0)
         billboardGui.AlwaysOnTop = true
 
-        textLabel = Instance.new("TextLabel")
+        local textLabel = Instance.new("TextLabel")
         textLabel.Parent = billboardGui
         textLabel.Size = UDim2.new(1, 0, 1, 0)
         textLabel.BackgroundTransparency = 1
+        textLabel.Text = txt
         textLabel.TextColor3 = Color3.new(1, 1, 1)
         textLabel.TextSize = 20
         textLabel.Font = Enum.Font.SciFi
-        textLabel.Name = "HealthLabel"
-    else
-        textLabel = billboardGui:FindFirstChild("HealthLabel")
     end
-
-    textLabel.Text = txt
 
     if not t:FindFirstChild("TBXP") then
         local tbxp = Instance.new("Highlight")
@@ -119,53 +108,8 @@ function cesp(t, hd, txt)
     end
 end
 
-local function updateHealthLabel(player)
-    local character = player.Character
-    if character and character:FindFirstChild("Head") then
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            local healthText = string.format("%s | Health: %.2f", player.Name, humanoid.Health)
-            cesp(character, character.Head, healthText)
-        end
-    end
-end
-
-local function setupHealthTracking(player)
-    local connections = getgenv().playerConnections[player] or {}
-
-    local function onCharacterAdded(character)
-        local humanoid = character:WaitForChild("Humanoid")
-        updateHealthLabel(player)
-        table.insert(connections, humanoid.HealthChanged:Connect(function()
-            updateHealthLabel(player)
-        end))
-    end
-
-    if player.Character then
-        onCharacterAdded(player.Character)
-    end
-
-    table.insert(connections, player.CharacterAdded:Connect(onCharacterAdded))
-    getgenv().playerConnections[player] = connections
-end
-
-local function disconnectHealthTracking(player)
-    local connections = getgenv().playerConnections[player]
-    if connections then
-        for _, conn in ipairs(connections) do
-            conn:Disconnect()
-        end
-        getgenv().playerConnections[player] = nil
-    end
-end
-
-local function updateESP()
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player ~= game.Players.LocalPlayer then
-            setupHealthTracking(player)
-        end
-    end
-end
+local rs = game:GetService("RunService")
+local espConnection
 
 LeftGroupBox:AddToggle(
     "ESP",
@@ -174,30 +118,33 @@ LeftGroupBox:AddToggle(
         Default = false,
         Callback = function(state)
             if state then
-                getgenv().espActive = true
-                Library:Notify("ESP is now enabled", 3)
-                getgenv().espConnection = rs.RenderStepped:Connect(function()
-                    if getgenv().espActive then
-                        updateESP()
+                Library:Notify("ESP", "ESP is now enabled", 3)
+                espConnection = rs.RenderStepped:Connect(
+                    function()
+                        for _, player in pairs(game.Players:GetPlayers()) do
+                            if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+                                spawn(function()
+                                    local healthText = player.Name .. " | Health: " .. math.ceil(player.Character.Humanoid.Health)
+                                    cesp(player.Character, player.Character.Head, healthText)
+                                end)
+                            end
+                        end
                     end
-                end)
+                )
             else
-                getgenv().espActive = false
-                Library:Notify("ESP is now disabled", 3)
-                if getgenv().espConnection then
-                    getgenv().espConnection:Disconnect()
-                    getgenv().espConnection = nil
+                Library:Notify("ESP", "ESP is now disabled", 3)
+                if espConnection then
+                    espConnection:Disconnect()
+                    espConnection = nil
                     for _, player in pairs(game.Players:GetPlayers()) do
                         if player ~= game.Players.LocalPlayer and player.Character then
-                            local highlight = player.Character:FindFirstChild("TBXP")
-                            local billboard = player.Character.Head:FindFirstChild("BillboardGui")
-                            if highlight then
-                                highlight:Destroy()
+                            local head = player.Character:FindFirstChild("Head")
+                            if head then
+                                local billboard = head:FindFirstChild("BillboardGui")
+                                if billboard then
+                                    billboard:Destroy()
+                                end
                             end
-                            if billboard then
-                                billboard:Destroy()
-                            end
-                            disconnectHealthTracking(player)
                         end
                     end
                 end
@@ -350,7 +297,7 @@ LeftGroupBox:AddToggle(
         Default = false,
         Tooltip = "Click TP!",
         Callback = function(state)
-
+            
             if state then
                 clicktp = mouse.Button1Down:Connect(function()
                     local hitPosition = mouse.Hit.p
