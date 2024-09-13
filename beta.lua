@@ -111,6 +111,23 @@ end
 local rs = game:GetService("RunService")
 local espConnection
 
+local function updateESP(player)
+    if player.Character and player.Character:FindFirstChild("Head") then
+        local head = player.Character.Head
+        local health = player.Character:FindFirstChild("Humanoid")
+        if health then
+            local function updateHealthText()
+                local healthText = player.Name .. " | Health: " .. math.ceil(health.Health)
+                cesp(player.Character, head, healthText)
+            end
+
+            updateHealthText()
+
+            health.Changed:Connect(updateHealthText)
+        end
+    end
+end
+
 LeftGroupBox:AddToggle(
     "ESP",
     {
@@ -118,21 +135,20 @@ LeftGroupBox:AddToggle(
         Default = false,
         Callback = function(state)
             if state then
-                Library:Notify("ESP", "ESP is now enabled", 3)
+                Library:Notify("ESP is now enabled", 3)
                 espConnection = rs.RenderStepped:Connect(
                     function()
                         for _, player in pairs(game.Players:GetPlayers()) do
-                            if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+                            if player ~= game.Players.LocalPlayer then
                                 spawn(function()
-                                    local healthText = player.Name .. " | Health: " .. math.ceil(player.Character.Humanoid.Health)
-                                    cesp(player.Character, player.Character.Head, healthText)
+                                    updateESP(player)
                                 end)
                             end
                         end
                     end
                 )
             else
-                Library:Notify("ESP", "ESP is now disabled", 3)
+                Library:Notify("ESP is now disabled", 3)
                 if espConnection then
                     espConnection:Disconnect()
                     espConnection = nil
