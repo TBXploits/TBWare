@@ -70,62 +70,81 @@ LeftGroupBox:AddInput(
     }
 )
 
-function cesp(t, hd, txt)
-    local part = hd
+function cesp(character, head, txt)
+    local part = head
+    local billboardGui = part:FindFirstChild("BillboardGui")
+    local textLabel = billboardGui and billboardGui:FindFirstChild("TextLabel")
 
-    if not part:FindFirstChild("BillboardGui") then
-        local billboardGui = Instance.new("BillboardGui")
+    if not billboardGui then
+        billboardGui = Instance.new("BillboardGui")
+        billboardGui.Name = "BillboardGui"
         billboardGui.Parent = part
         billboardGui.Adornee = part
         billboardGui.Size = UDim2.new(0, 150, 0, 50)
         billboardGui.StudsOffset = Vector3.new(0, 2, 0)
         billboardGui.AlwaysOnTop = true
 
-        local textLabel = Instance.new("TextLabel")
+        textLabel = Instance.new("TextLabel")
+        textLabel.Name = "TextLabel"
         textLabel.Parent = billboardGui
         textLabel.Size = UDim2.new(1, 0, 1, 0)
         textLabel.BackgroundTransparency = 1
-        textLabel.Text = txt
         textLabel.TextColor3 = Color3.new(1, 1, 1)
         textLabel.TextSize = 20
         textLabel.Font = Enum.Font.SciFi
     end
 
-    if not t:FindFirstChild("TBXP") then
-        local tbxp = Instance.new("Highlight")
-        tbxp.Name = "TBXP"
-        tbxp.Parent = t
-        tbxp.Adornee = t
+    if textLabel then
+        textLabel.Text = txt
+    end
+
+    local highlight = character:FindFirstChild("TBXP")
+    if not highlight then
+        highlight = Instance.new("Highlight")
+        highlight.Name = "TBXP"
+        highlight.Parent = character
+        highlight.Adornee = character
 
         local r, g, b = stringToRGB(getgenv().Clr)
-        tbxp.FillColor = r and g and b and Color3.fromRGB(r, g, b) or Color3.fromRGB(153, 255, 255)
+        highlight.FillColor = r and g and b and Color3.fromRGB(r, g, b) or Color3.fromRGB(153, 255, 255)
 
         local x, y, z = stringToRGB(getgenv().OClr)
-        tbxp.OutlineColor = x and y and z and Color3.fromRGB(x, y, z) or Color3.new(1, 1, 1)
+        highlight.OutlineColor = x and y and z and Color3.fromRGB(x, y, z) or Color3.new(1, 1, 1)
 
-        tbxp.FillTransparency = 0.5
-        tbxp.OutlineTransparency = 0
+        highlight.FillTransparency = 0.5
+        highlight.OutlineTransparency = 0
+    end
+
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid.HealthChanged:Connect(function()
+            textLabel.Text = player.Name .. " | Health: " .. string.format("%.2f", humanoid.Health)
+        end)
+    end
+end
+
+local function onCharacterAdded(player)
+    player.CharacterAdded:Connect(function(character)
+        local head = character:WaitForChild("Head")
+        cesp(character, head, player.Name .. " | Health: " .. string.format("%.2f", character:FindFirstChildOfClass("Humanoid").Health))
+    end)
+end
+
+local function onPlayerRemoving(player)
+    if player.Character then
+        local highlight = player.Character:FindFirstChild("TBXP")
+        local billboard = player.Character:FindFirstChild("Head") and player.Character.Head:FindFirstChild("BillboardGui")
+        if highlight then
+            highlight:Destroy()
+        end
+        if billboard then
+            billboard:Destroy()
+        end
     end
 end
 
 local rs = game:GetService("RunService")
 local espConnection
-
-local function setupESP(player)
-    if player.Character and player.Character:FindFirstChild("Head") then
-        local head = player.Character.Head
-        local health = player.Character:FindFirstChild("Humanoid")
-        if health then
-            local function updateHealthText()
-                local healthText = player.Name .. " | Health: " .. math.ceil(health.Health)
-                cesp(player.Character, head, healthText)
-            end
-
-            updateHealthText()
-            health.HealthChanged:Connect(updateHealthText)
-        end
-    end
-end
 
 LeftGroupBox:AddToggle(
     "ESP",
@@ -135,17 +154,23 @@ LeftGroupBox:AddToggle(
         Callback = function(state)
             if state then
                 Library:Notify("ESP is now enabled", 3)
-                espConnection = game:GetService("RunService").RenderStepped:Connect(
+                espConnection =
+                    rs.RenderStepped:Connect(
                     function()
                         for _, player in pairs(game.Players:GetPlayers()) do
-                            if player ~= game.Players.LocalPlayer and player.Character then
-                                if not player.Character:FindFirstChild("Head"):FindFirstChild("BillboardGui") then
-                                    setupESP(player)
-                                end
+                            if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+                                cesp(
+                                    player.Character,
+                                    player.Character.Head,
+                                    player.Name .. " | Health: " .. string.format("%.2f", player.Character.Humanoid.Health)
+                                )
                             end
                         end
                     end
                 )
+
+                game.Players.PlayerAdded:Connect(onCharacterAdded)
+                game.Players.PlayerRemoving:Connect(onPlayerRemoving)
             else
                 Library:Notify("ESP is now disabled", 3)
                 if espConnection then
@@ -153,12 +178,13 @@ LeftGroupBox:AddToggle(
                     espConnection = nil
                     for _, player in pairs(game.Players:GetPlayers()) do
                         if player ~= game.Players.LocalPlayer and player.Character then
-                            local head = player.Character:FindFirstChild("Head")
-                            if head then
-                                local billboard = head:FindFirstChild("BillboardGui")
-                                if billboard then
-                                    billboard:Destroy()
-                                end
+                            local highlight = player.Character:FindFirstChild("TBXP")
+                            local billboard = player.Character:FindFirstChild("Head") and player.Character.Head:FindFirstChild("BillboardGui")
+                            if highlight then
+                                highlight:Destroy()
+                            end
+                            if billboard then
+                                billboard:Destroy()
                             end
                         end
                     end
@@ -312,7 +338,7 @@ LeftGroupBox:AddToggle(
         Default = false,
         Tooltip = "Click TP!",
         Callback = function(state)
-            
+
             if state then
                 clicktp = mouse.Button1Down:Connect(function()
                     local hitPosition = mouse.Hit.p
@@ -328,7 +354,7 @@ LeftGroupBox:AddToggle(
 task.spawn(
     function()
         while true do
-            wait(0.1)
+            wait()
             local char = game.Players.LocalPlayer.Character
             local hum = char and char:FindFirstChildOfClass("Humanoid")
             if hum then
@@ -357,7 +383,7 @@ local function onPlayerDeath(player)
         humanoid.Died:Connect(
             function()
                 if not getgenv().notified[player.UserId] then
-                    Library:Notify("Player Death", player.Name .. " has died.", 5)
+                    Library:Notify(player.Name .. " has died.", 5)
                     getgenv().notified[player.UserId] = true
                 end
             end
