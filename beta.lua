@@ -23,6 +23,7 @@ local Window =
 
 local Tabs = {
     Main = Window:AddTab("Main"),
+    Ifm = Window:AddTab("Info")
     ["TBWare Settings"] = Window:AddTab("TBWare Settings")
 }
 
@@ -496,6 +497,10 @@ RightGroupBox:AddToggle(
         end
     }
 )
+
+Ifm:AddLabel("Account Age:"..player.AccountAge)
+Ifm:AddLabel("Username:"..player.Name)
+Ifm:AddLabel("Display:"..player.DisplayName)
 
 local FrameTimer = tick()
 local FrameCounter = 0
