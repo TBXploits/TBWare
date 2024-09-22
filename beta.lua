@@ -29,6 +29,8 @@ local Tabs = {
 
 local LeftGroupBox = Tabs.Main:AddLeftGroupbox("Main Settings")
 local RightGroupBox = Tabs.Main:AddRightGroupbox("Additional Settings")
+local l_info = Tabs.Ifm:AddLeftGroupbox('Information')
+local r_info = Tabs.Ifm:AddRightGroupbox('Your profile')
 
 getgenv().ison = false
 getgenv().FSPD = false
@@ -522,9 +524,13 @@ RightGroupBox:AddToggle(
     }
 )
 
-Ifm:AddLabel("Account Age:" .. player.AccountAge)
-Ifm:AddLabel("Username:" .. player.Name)
-Ifm:AddLabel("Display:" .. player.DisplayName)
+l_info:AddLabel("Account Age:" .. player.AccountAge, true)
+l_info:AddLabel("Username:" .. player.Name, true)
+l_info:AddLabel("Display:" .. player.DisplayName, true)
+l_info:AddLabel("User ID" .. player.UserId, true)
+r_info:AddButton("Copy Link", function()
+    setclipboard("https://roblox.com/users/" .. player.UserId .. "/profile")
+end)
 
 local FrameTimer = tick()
 local FrameCounter = 0
