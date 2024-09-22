@@ -23,7 +23,7 @@ local Window =
 
 local Tabs = {
     Main = Window:AddTab("Main"),
-    Ifm = Window:AddTab("Info")
+    Ifm = Window:AddTab("Info"),
     ["TBWare Settings"] = Window:AddTab("TBWare Settings")
 }
 
@@ -118,23 +118,33 @@ function cesp(character, head, txt)
 
     local humanoid = character:FindFirstChildOfClass("Humanoid")
     if humanoid then
-        humanoid.HealthChanged:Connect(function()
-            textLabel.Text = player.Name .. " | Health: " .. string.format("%.2f", humanoid.Health)
-        end)
+        humanoid.HealthChanged:Connect(
+            function()
+                textLabel.Text = player.Name .. " | Health: " .. string.format("%.2f", humanoid.Health)
+            end
+        )
     end
 end
 
 local function onCharacterAdded(player)
-    player.CharacterAdded:Connect(function(character)
-        local head = character:WaitForChild("Head")
-        cesp(character, head, player.Name .. " | Health: " .. string.format("%.2f", character:FindFirstChildOfClass("Humanoid").Health))
-    end)
+    player.CharacterAdded:Connect(
+        function(character)
+            local head = character:WaitForChild("Head")
+            cesp(
+                character,
+                head,
+                player.Name ..
+                    " | Health: " .. string.format("%.2f", character:FindFirstChildOfClass("Humanoid").Health)
+            )
+        end
+    )
 end
 
 local function onPlayerRemoving(player)
     if player.Character then
         local highlight = player.Character:FindFirstChild("TBXP")
-        local billboard = player.Character:FindFirstChild("Head") and player.Character.Head:FindFirstChild("BillboardGui")
+        local billboard =
+            player.Character:FindFirstChild("Head") and player.Character.Head:FindFirstChild("BillboardGui")
         if highlight then
             highlight:Destroy()
         end
@@ -159,11 +169,15 @@ LeftGroupBox:AddToggle(
                     rs.RenderStepped:Connect(
                     function()
                         for _, player in pairs(game.Players:GetPlayers()) do
-                            if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+                            if
+                                player ~= game.Players.LocalPlayer and player.Character and
+                                    player.Character:FindFirstChild("Head")
+                             then
                                 cesp(
                                     player.Character,
                                     player.Character.Head,
-                                    player.Name .. " | Health: " .. string.format("%.2f", player.Character.Humanoid.Health)
+                                    player.Name ..
+                                        " | Health: " .. string.format("%.2f", player.Character.Humanoid.Health)
                                 )
                             end
                         end
@@ -180,7 +194,9 @@ LeftGroupBox:AddToggle(
                     for _, player in pairs(game.Players:GetPlayers()) do
                         if player ~= game.Players.LocalPlayer and player.Character then
                             local highlight = player.Character:FindFirstChild("TBXP")
-                            local billboard = player.Character:FindFirstChild("Head") and player.Character.Head:FindFirstChild("BillboardGui")
+                            local billboard =
+                                player.Character:FindFirstChild("Head") and
+                                player.Character.Head:FindFirstChild("BillboardGui")
                             if highlight then
                                 highlight:Destroy()
                             end
@@ -297,38 +313,44 @@ LeftGroupBox:AddDivider()
 local ProximityPromptService = game:GetService("ProximityPromptService")
 
 LeftGroupBox:AddToggle(
-    'IIT1',
+    "IIT1",
     {
-    Text = "Instant Interact Method 1",
-    Default = false,
-    Tooltip = "Set Prompt Duration 0",
-    Callback = function(b)
-        if b then
-            met1 = ProximityPromptService.PromptShown:Connect(function(prompt)
-                prompt.HoldDuration = 0
-            end)
-        else
-        met1:Disconnect()
+        Text = "Instant Interact Method 1",
+        Default = false,
+        Tooltip = "Set Prompt Duration 0",
+        Callback = function(b)
+            if b then
+                met1 =
+                    ProximityPromptService.PromptShown:Connect(
+                    function(prompt)
+                        prompt.HoldDuration = 0
+                    end
+                )
+            else
+                met1:Disconnect()
+            end
         end
-    end
     }
 )
 
 LeftGroupBox:AddToggle(
-    'IIT2',
+    "IIT2",
     {
-    Text = "Instant Interact Method 2",
-    Default = false,
-    Tooltip = "Fire Prompt Instantly After Hold",
-    Callback = function(b)
-        if b then
-            met2 = ProximityPromptService.PromptButtonHoldBegan:Connect(function(prompt)
-                fireproximityprompt(prompt)
-            end)
-        else
-        met2:Disconnect()
+        Text = "Instant Interact Method 2",
+        Default = false,
+        Tooltip = "Fire Prompt Instantly After Hold",
+        Callback = function(b)
+            if b then
+                met2 =
+                    ProximityPromptService.PromptButtonHoldBegan:Connect(
+                    function(prompt)
+                        fireproximityprompt(prompt)
+                    end
+                )
+            else
+                met2:Disconnect()
+            end
         end
-    end
     }
 )
 
@@ -339,12 +361,14 @@ LeftGroupBox:AddToggle(
         Default = false,
         Tooltip = "Click TP!",
         Callback = function(state)
-
             if state then
-                clicktp = mouse.Button1Down:Connect(function()
-                    local hitPosition = mouse.Hit.p
-                    player.Character:PivotTo(CFrame.new(hitPosition))
-                end)
+                clicktp =
+                    mouse.Button1Down:Connect(
+                    function()
+                        local hitPosition = mouse.Hit.p
+                        player.Character:PivotTo(CFrame.new(hitPosition))
+                    end
+                )
             else
                 clicktp:Disconnect()
             end
@@ -498,9 +522,9 @@ RightGroupBox:AddToggle(
     }
 )
 
-Ifm:AddLabel("Account Age:"..player.AccountAge)
-Ifm:AddLabel("Username:"..player.Name)
-Ifm:AddLabel("Display:"..player.DisplayName)
+Ifm:AddLabel("Account Age:" .. player.AccountAge)
+Ifm:AddLabel("Username:" .. player.Name)
+Ifm:AddLabel("Display:" .. player.DisplayName)
 
 local FrameTimer = tick()
 local FrameCounter = 0
@@ -509,7 +533,7 @@ local FPS = 60
 local WatermarkConnection =
     game:GetService("RunService").RenderStepped:Connect(
     function()
-    FrameCounter += 1
+        FrameCounter += 1
         if (tick() - FrameTimer) > 1 then
             FPS = FrameCounter
             FrameCounter = 0
@@ -525,19 +549,27 @@ local MenuGroup = Tabs["TBWare Settings"]:AddLeftGroupbox("Menu")
 MenuGroup:AddButton(
     "Unload",
     function()
-        pcall(function()
-            Library:Unload()
-            getgenv().TBX_Loaded = nil
-            getgenv().TBX_FPS = nil
-            getgenv().FSPD = false
-            getgenv().FJMP = false
-            getgenv().FBTH = false
-            getgenv().Viewing = false
-            getgenv().running_view = false
-            if met1 ~= nil then met1:Disconnect() end
-            if met2 ~= nil then met2:Disconnect() end
-            if clicktp ~= nil then clicktp:Disconnect() end
-        end)
+        pcall(
+            function()
+                Library:Unload()
+                getgenv().TBX_Loaded = nil
+                getgenv().TBX_FPS = nil
+                getgenv().FSPD = false
+                getgenv().FJMP = false
+                getgenv().FBTH = false
+                getgenv().Viewing = false
+                getgenv().running_view = false
+                if met1 ~= nil then
+                    met1:Disconnect()
+                end
+                if met2 ~= nil then
+                    met2:Disconnect()
+                end
+                if clicktp ~= nil then
+                    clicktp:Disconnect()
+                end
+            end
+        )
         local character = player.Character
         if character then
             local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
